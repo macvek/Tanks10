@@ -1,0 +1,22 @@
+
+	<div style= "width:100%" class="centrowanie"> 
+		<div id="pytanie">Graj lub obserwuj</div> 
+			
+			<button id="przyciskGraj" class="apend">GRAM</button>
+			<button id="przyciskObserwuj" class="apend" >OBSERWUJE</button> 	
+	</div>
+<script>
+window.okienko.obserwujMenu = function(node)
+{
+	if ($(node).attr("id")== "przyciskGraj")
+	{
+		window.okienko.wczytaj("panel/menu/logowanie.html","","logowanieMenu");
+	}
+
+	if ($(node).attr("id")== "przyciskObserwuj")
+	{
+		window.socket.send(Set("type",1));
+	}
+}
+
+</script>

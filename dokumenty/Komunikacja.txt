@@ -1,0 +1,37 @@
+=====
+Opis protokołu komunikacji w grze Tanks10
+=====
+
+Entity jest to interface, który implementuje każdy interaktywny element systemu.
+Istnieje kilka obiektów Entity:
+
+* God : funkcje administracyjne
+* Newbie : nowy klient, który jeszcze nie zdecydował o dalszych działaniach
+* Soldier : standardowy gracz
+* Spectator : obserwator rozgrywki.
+
+Po połączeniu do klienta jest przypisany Newbie. Wysyła pakiet Hello, który informuje klienta,
+że kim jest (Newbie) i odpowiada na pakiet SetAttribute.
+
+Dostępne sa 2 atrybuty: name i type. Name określa imię, type określa rolę w systemie.
+Obecnie nie ma restrykcji co do wyboru God, ponieważ wprowadziłoby to niepotrzebne skomplikowanie i utrudniłoby
+testy.
+
+Po wysłaniu SetAttribute(type = ?) przydzielany jest nowy Entity do połączenia.
+
+  Dla type = TYPE_SOLDIER:
+> Wysyła pakiet Hello,
+> Wysyła serię pakietów AddEntity, które informują o obiektach na mapie
+> Wysyła pakiet YouAre, informujący którym, z powyższych, entity steruje gracz
+> Okresowo (co klatkę) wysyła serię pakietów wygenerowanych w ramach odświeżania stanu (każdy entity co jakiś czas).
+< Przyjmuje pakiet Move(x,y), gdzie x i y to współrzędne na mapie w które ma się udać kierowany obiekt(ale liczy się tylko kierunek)
+< Przyjmuje pakiet Stop(), który zatrzymuje ruch.
+> Wysyła pakiet RemoveEntity, jeżeli dany Entity został usunięty
+
+Ta wersja jest zbudowana dla ustalenia poprawnego działania z wyświetlanie. Możliwe, że do updateów zostaną dodane
+informacje o aktualnej klatce.
+
+Są jeszcze pakiety, które są obsługiwane niezależnie od statusu Entity w systemie:
+Ping, Pong (wykorzystywane do badania czasu reakcji serwera/klienta)
+ProtocolSignature ( informacja o wersji protokołu )
+

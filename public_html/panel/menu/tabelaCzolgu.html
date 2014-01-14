@@ -1,0 +1,45 @@
+
+
+	<div style= "width:100%"> 
+		<div id="pytanie">Tabela czolgow</div>
+		<div id="tabela" class="centrowanie">
+			<table>
+				<tr>
+					<td>Ikona</td>
+					<td>Nazwa</td>
+					<td>Wybor</td>
+				</tr>
+				<tr>
+					<td><img style="border: medium none; padding: 4px;" src="panel/grafika/czolgi/maly_mini.jpg" alt="" /></td>
+					<td>Maly</td>
+					<td><input name="NameCzolg" type="radio" value="Tiny" /></td>
+				</tr>
+				<tr>
+					<td><img  style="border: medium none; padding: 4px;" src="panel/grafika/czolgi/sredni_mini.jpg" alt="" /></td>
+					<td>Sredni</td>
+					<td><input name="NameCzolg" type="radio" value="Light" /></td>
+				</tr>
+				<tr>
+					<td><img style="border: medium none; padding: 4px;" src="panel/grafika/czolgi/ciezki_mini.jpg" alt="" /></td>
+					<td>Duzy</td>
+					<td><input name="NameCzolg" type="radio" value="Massive" /></td>
+				</tr>
+				
+			</table>
+				<button id="zmienCzolg" class="apend">Zapisz zmiany</button>
+				<button id="wroc" class="apend">Wroc do gry</button>		
+		</div>	
+	</div>
+
+<script>
+window.okienko.zmienCzolgMenu = function(node)
+{
+	if ($(node).attr("id")== "zmienCzolg")
+	{
+		var model = $('input:radio[name=NameCzolg]:checked').val();
+		if (model)
+			window.socket.send(Set("model",model));
+
+	}
+}
+</script>

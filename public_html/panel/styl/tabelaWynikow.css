@@ -1,0 +1,43 @@
+#DebugForm {
+	position:absolute;
+	width:400px;
+	background-image:url(grafika/moro2.jpg);
+	border:10px groove #808000;
+	text-align:center;
+	color:#808040;
+}
+
+
+#pytanie {
+	background-color: #000000;
+	color:#ffffff;
+	font-weight:bold;
+	text-align:center;
+	border:2px groove #000;
+}
+
+table
+{
+font-weight:700;
+position:relative;
+width:100%;
+}
+
+td
+{border:2px solid black;
+margin:0;
+padding:0;
+background-color:#AAA;		
+}
+
+
+div#qTip
+{padding: 3px;
+border: 1px solid #666;
+display: none;
+background-color: #999;
+color: #FFF;
+font: bold 9px Verdana, Arial, sans-serif;
+position: absolute;
+z-index: 1000;
+}

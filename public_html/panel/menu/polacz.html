@@ -1,0 +1,23 @@
+
+	<div style= "width:100%" class="centrowanie"> 
+		<div id="pytanie">Czy chcesz sie polaczyc?</div> 
+			<button id="przyciskPolacz" class="apend">Polacz</button>
+			<button id="przyciskRozlacz" class="apend">Rozlacz</button>
+			<button  class="apend">Anuluj</button>
+	</div>
+<script>
+
+window.okienko.polaczMenu = function(node){
+	if ($(node).attr("id")== "przyciskPolacz")	
+	{
+		prepare_socket();
+	}
+	if ($(node).attr("id")== "przyciskRozlacz")	
+	{
+		if (window.socket) {
+			window.socket.disconnect();
+		}
+	}
+}
+
+</script>
