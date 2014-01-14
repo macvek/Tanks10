@@ -1,10 +1,10 @@
 
 window.socket = {
 	send: function(){}
-}
+};
 
 var TanksPacket = function(name,src) {
-	if ( null === src )
+	if ( null == src )
 		src = {};
 		
 	src._name = name;
@@ -23,7 +23,7 @@ var TanksApplet = function(appletId, callback) {
 	}
 	
 	// nie jest budowane przez obiekty DOM bo to nie jest poprawny html, ale działa
-	var insert = "<applet id=\""+appletId+"\" codebase=\"TanksSocket\" code=\"tanks10.TanksSocket.class\" width=\"0\" height=\"0\" mayscript></applet>";
+	var insert = '<applet id="'+appletId+'" archive="applet/Tanks10_Applet.jar" code="tanks10.TanksSocket" width="10" height="10" mayscript></applet>';
 	$("body").append(insert);
 	var loop = function() {
 		if (document.getElementById(appletId).register) {
@@ -53,11 +53,11 @@ var TanksSocket = function(socketApplet) {
 		
 		// callback jest to : function(messageName,messageBody) ...
 		on : function(messageName,callback) {
-			if (messageName === null)
+			if (messageName == null)
 				return;
 				
 			if (callback instanceof Function) {
-				if ( this._message[messageName] === null )
+				if ( this._message[messageName] == undefined )
 					this._message[messageName] = new Array();
 					
 				this._message[messageName].push(callback);
@@ -76,7 +76,7 @@ var TanksSocket = function(socketApplet) {
 				var handlers = self._message[name];
 				
 				// Nieznany pakiet, uruchom zdarzenie błędu
-				if (handlers === null) {
+				if (handlers == undefined) {
 					self._message._error(name,body);
 				}
 				// Lub wywołaj wszystkie zarejestrowane handlery
@@ -85,7 +85,7 @@ var TanksSocket = function(socketApplet) {
 						handlers[index](name,body);
 					}
 				}
-			}
+			};
 			
 			for (i=0;i<arguments.length;i++) {
 				if (newMessage) {
@@ -94,7 +94,7 @@ var TanksSocket = function(socketApplet) {
 					continue;
 				}
 				
-				if (arguments[i] === "\n") {
+				if (arguments[i] == "\n") {
 					newMessage = true;
 					executePacket(messageName,messageBody);
 					messageName = "";
@@ -132,7 +132,7 @@ var TanksSocket = function(socketApplet) {
 
 	// Buduje pakiet widoczny dla apletu z obiektu wejściowego i wysyła go
 	this.send = function(packet) {
-		if (false === parent.status)
+		if (false == parent.status)
 			return;
 
 		var msgName = packet._name;
@@ -140,15 +140,15 @@ var TanksSocket = function(socketApplet) {
 		var msgParams = {};
 
 		// brak nazwy = błąd
-		if ( msgName === null )
+		if ( msgName == null )
 			return;
 		
 		for (i in packet) {
 			// Omijamy pola, które nie mają być wysłane			
-			if ( i === "prototype" )
+			if ( i == "prototype" )
 				continue;
 				
-			if ( i[0] === "_" )
+			if ( i[0] == "_" )
 				continue;
 				
 			if ( packet[i] instanceof Function )

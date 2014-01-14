@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with Tanks10 Project.  If not, see <http://www.gnu.org/licenses/>.
 */
 package tanks10;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import javax.swing.JApplet;
 
 import netscape.javascript.*;
@@ -133,10 +135,7 @@ public class TanksSocket extends JApplet {
 		
 		try {
 			// pobranie numeru portu
-			Integer port = (Integer)input.getMember("port");
-			if (port == null)
-				return BLAD_KONWERSJI;
-			
+                        double port = (double)input.getMember("port");
 			if (port < 1024 || port > 65535)
 				return BLAD_PORT;
 			
@@ -154,13 +153,18 @@ public class TanksSocket extends JApplet {
 				return BLAD_LISTENER;
 			
 			// Wszystko się zgadza więc tworzymy obsługę połączenia
-			connection = new ConnectionManager(host,port,listener,this,console);
+			connection = new ConnectionManager(host,(int)port,listener,this,console);
 			
 		}catch(Exception e) {
 			/*Jeżeli wystąpi jakiś wyjątek to prawdopodobnie będzie to
 			 * błąd konwersji z typu javascript na typ java
 			 */
-			return BLAD_KONWERSJI;
+			console.log(e.getMessage());
+                        StringWriter writer = new StringWriter();
+                        
+                        e.printStackTrace(new PrintWriter(writer));
+                        console.log(writer.toString());
+                        return BLAD_KONWERSJI;
 		}
 		
 		// Nie wystąpił wyjątek, więc uznajemy że jest zarejestrowany
