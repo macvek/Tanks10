@@ -4,16 +4,16 @@ window.socket = {
 }
 
 var TanksPacket = function(name,src) {
-	if ( null == src )
-		src = {}
+	if ( null === src )
+		src = {};
 		
 	src._name = name;
 	return src;
-}
+};
 
 var Set = function(iName,iValue) {
 	return new TanksPacket("SetAttribute",{name:iName,value:iValue});
-}
+};
 
 var TanksApplet = function(appletId, callback) {
 	// jest już zrobiony taki aplet
@@ -31,16 +31,16 @@ var TanksApplet = function(appletId, callback) {
 		}
 		else
 			setTimeout(loop,100);
-	}
+	};
 	
 	loop();
-}
+};
 
 var TanksSocket = function(socketApplet) {
 	var socket = socketApplet;
 	var parent = this;
 	
-	this.log = function(msg,code) {alert(msg+" : "+code,"Błąd");}
+	this.log = function(msg,code) {alert(msg+" : "+code,"Błąd");};
 	this.status = false;	// status połączenia
 	
 	this.listener = {
@@ -53,11 +53,11 @@ var TanksSocket = function(socketApplet) {
 		
 		// callback jest to : function(messageName,messageBody) ...
 		on : function(messageName,callback) {
-			if (messageName == null)
+			if (messageName === null)
 				return;
 				
 			if (callback instanceof Function) {
-				if ( this._message[messageName] == null )
+				if ( this._message[messageName] === null )
 					this._message[messageName] = new Array();
 					
 				this._message[messageName].push(callback);
@@ -76,7 +76,7 @@ var TanksSocket = function(socketApplet) {
 				var handlers = self._message[name];
 				
 				// Nieznany pakiet, uruchom zdarzenie błędu
-				if (handlers == null) {
+				if (handlers === null) {
 					self._message._error(name,body);
 				}
 				// Lub wywołaj wszystkie zarejestrowane handlery
@@ -94,7 +94,7 @@ var TanksSocket = function(socketApplet) {
 					continue;
 				}
 				
-				if (arguments[i] == "\n") {
+				if (arguments[i] === "\n") {
 					newMessage = true;
 					executePacket(messageName,messageBody);
 					messageName = "";
@@ -127,13 +127,12 @@ var TanksSocket = function(socketApplet) {
 		onConnectionError: function(errorCode){
 			okienko.msgBox("Nie udało się połączyć z serwerem");
 			parent.log("Błąd podczas nawiązywania połączenia:" ,socket.getErrorMsg(errorCode));
-		},
-		
-	}
+		}
+	};
 
 	// Buduje pakiet widoczny dla apletu z obiektu wejściowego i wysyła go
 	this.send = function(packet) {
-		if (false == parent.status)
+		if (false === parent.status)
 			return;
 
 		var msgName = packet._name;
@@ -141,15 +140,15 @@ var TanksSocket = function(socketApplet) {
 		var msgParams = {};
 
 		// brak nazwy = błąd
-		if ( msgName == null )
+		if ( msgName === null )
 			return;
 		
 		for (i in packet) {
 			// Omijamy pola, które nie mają być wysłane			
-			if ( i == "prototype" )
+			if ( i === "prototype" )
 				continue;
 				
-			if ( i[0] == "_" )
+			if ( i[0] === "_" )
 				continue;
 				
 			if ( packet[i] instanceof Function )
@@ -167,39 +166,37 @@ var TanksSocket = function(socketApplet) {
 			out += x+":"+msgParams[x]+"\n";
 		}
 		
-		//alert(out);
-	
 		// Konstrukcja obiektu i wysłanie go
 		socket.send({
 			messageName:msgName,
 			messageHead:msgHead,
 			messageParams:msgParams
 		});
-	}
+	};
 
 	this.connect = function(remoteHost,remotePort) {
 		// zarejestruj listener i podaj dane do połączenia
 		
 		var result = socket.register({host:remoteHost, port:remotePort, listener:this.listener});
 		
-		if (result != 0) {
+		if (result !== 0) {
 			this.log("Błąd podczas rejestracji połączenia", socket.getErrorMsg(result));
 			return;
 		}
 		
 		// wykonaj połączenie
 		result = socket.connect();
-		if (result != 0) {
+		if (result !== 0) {
 			this.log("Błąd podczas nawiązywania połączenia", socket.getErrorMsg(result));
 			return;
 		}
 		
-	}
+	};
 	
 	this.disconnect = function() {
 		var result = socket.disconnect();
 		if (result) {
 			alert(socket.getErrorMsg(result));
 		}
-	}
-}
+	};
+};
