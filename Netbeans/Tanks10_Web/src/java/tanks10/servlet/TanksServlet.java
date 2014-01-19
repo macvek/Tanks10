@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import tanks10.TanksServer;
+import tanks10.world.TanksWorld;
 
 /**
  *
@@ -95,6 +96,7 @@ public class TanksServlet extends HttpServlet {
     @Override
     public void destroy() {
         tanksServer.stop();
+        TanksWorld.end();
     }
 
 }
