@@ -52,6 +52,6 @@ public class Ammo40mm extends Bullet{
 		}
 		
 		readyToRemove = true;
-		TanksWorld.Spawn(explodeAnim, vector);
+		TanksWorld.spawn(explodeAnim, vector);
 	}		
 }

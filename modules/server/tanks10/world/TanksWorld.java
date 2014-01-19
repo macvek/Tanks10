@@ -38,18 +38,21 @@ public class TanksWorld implements Runnable {
     public static final int UPDATEBUFFER_SIZE = 4096;
     public static final int TMPBUFFER_SIZE = 128;
     public static final int PING_TIMEOUT = 1000;	// wysyłamy pinga co sekunde
-    private static Set<String> colors = new HashSet<String>();
+    private final static Set<String> colors = new HashSet<>();
     private static double[][] spawnPoints;
 
     private boolean playerListChanged = false;	// czy w ostatniej klatce zmieniła się liczba graczy
     private static TanksWorld world;			// instancja świata
-    private TanksProtocolTiger protocol = new TanksProtocolTiger();// jest tutaj używany do budowania broadcastowej wiadomości
+    private final TanksProtocolTiger protocol = new TanksProtocolTiger();// jest tutaj używany do budowania broadcastowej wiadomości
 
+    // lista obiektów do utworzenia przy kolejnej klatce
+    private final Set<Box> toSpawn = new HashSet<>();
+    
     // Ustawiany jako updateBuffer gdy nie ma nic do wysłania
-    ByteBuffer emptyBuffer = ByteBuffer.allocate(0);
+    private final ByteBuffer emptyBuffer = ByteBuffer.allocate(0);
 
     // Tutaj jest trzymana wiadomość z updatem
-    ByteBuffer updateBuffer = emptyBuffer;
+    private ByteBuffer updateBuffer = emptyBuffer;
 
     public static TanksWorld getWorld() {
         return world;
@@ -58,24 +61,35 @@ public class TanksWorld implements Runnable {
     public TanksWorld() {
         TanksWorld.world = this;
 
-        /* Pakiety */
-        // Ogólnego przeznaczenia \\
-        TanksProtocolTiger.registerPacket(new Attribute());
-        TanksProtocolTiger.registerPacket(new SetAttribute());
-        TanksProtocolTiger.registerPacket(new GetAttribute());
-        TanksProtocolTiger.registerPacket(new Ping());
-        TanksProtocolTiger.registerPacket(new Pong());
-        TanksProtocolTiger.registerPacket(new ProtocolSignature());
-        TanksProtocolTiger.registerPacket(new Move());
-        TanksProtocolTiger.registerPacket(new Attack());
-        TanksProtocolTiger.registerPacket(new Spawn());
-        TanksProtocolTiger.registerPacket(new Say());
+        registerPackets();
+        registerWorldBoundaries();
+        registerColors();
+        registerSpawnPoints();
+    }
 
-        TanksProtocolTiger.registerPacket(new RekordyWynikow());
+    private void registerSpawnPoints() {
+        spawnPoints = new double[][]{
+            {60, 60},
+            {300, 60},
+            {560, 60},
+            {60, 400},
+            {300, 400},
+            {560, 400}
+        };
+    }
 
-        TanksProtocolTiger.registerPacket(new TimeStamp());
+    private void registerColors() {
+        // dostepne kolory
+        colors.add("czerwony");
+        colors.add("zielony");
+        colors.add("niebieski");
+        colors.add("bialy");
+        colors.add("zolty");
+        colors.add("brazowy");
+        colors.add("pomaranczowy");
+    }
 
-        // granice świata
+    private void registerWorldBoundaries() {
         entities.add(new StaticBlock(0, 240, 25, 240));
         entities.add(new StaticBlock(640, 240, 20, 240));
 
@@ -129,25 +143,25 @@ public class TanksWorld implements Runnable {
                 new double[]{195, 200},
                 new double[]{250, 150}
         ));
+    }
 
-        // dostepne kolory
-        colors.add("czerwony");
-        colors.add("zielony");
-        colors.add("niebieski");
-        colors.add("bialy");
-        colors.add("zolty");
-        colors.add("brazowy");
-        colors.add("pomaranczowy");
+    private void registerPackets() {
+        /* Pakiety */
+        // Ogólnego przeznaczenia \\
+        TanksProtocolTiger.registerPacket(new Attribute());
+        TanksProtocolTiger.registerPacket(new SetAttribute());
+        TanksProtocolTiger.registerPacket(new GetAttribute());
+        TanksProtocolTiger.registerPacket(new Ping());
+        TanksProtocolTiger.registerPacket(new Pong());
+        TanksProtocolTiger.registerPacket(new ProtocolSignature());
+        TanksProtocolTiger.registerPacket(new Move());
+        TanksProtocolTiger.registerPacket(new Attack());
+        TanksProtocolTiger.registerPacket(new Spawn());
+        TanksProtocolTiger.registerPacket(new Say());
 
-        spawnPoints = new double[][]{
-            {60, 60},
-            {300, 60},
-            {560, 60},
-            {60, 400},
-            {300, 400},
-            {560, 400}
-        };
+        TanksProtocolTiger.registerPacket(new RekordyWynikow());
 
+        TanksProtocolTiger.registerPacket(new TimeStamp());
     }
 
     synchronized static public int newWorldId() {
@@ -172,23 +186,19 @@ public class TanksWorld implements Runnable {
                 }
             }
         }
-
     }
 
     // Utworzenie pojedynczej animacji, nie zapamiętywanej na serwerze (np. eksplozja)
-    public static void Spawn(String model, double[] vector) {
+    public static void spawn(String model, double[] vector) {
         world.broadcast(new Spawn(model, vector));
     }
 
     // Ta animacja jest przyporządkowana do ID, np. animacja strzału
-    public static void Spawn(String model, int id) {
+    public static void spawn(String model, int id) {
         world.broadcast(new Spawn(model, id));
     }
 
-    // lista obiektów do utworzenia przy kolejnej klatce
-    private Set<Box> toSpawn = new HashSet<Box>();
-
-    static public void SpawnBox(Box box) {
+    static public void spawnBox(Box box) {
         world.toSpawn.add(box);
     }
 
@@ -213,7 +223,7 @@ public class TanksWorld implements Runnable {
     }
 
     // lista z imionami, używana do usunięcia duplikatów
-    private HashSet<String> nameSet = new HashSet<String>();
+    private final HashSet<String> nameSet = new HashSet<>();
 
     // sprawdza czy podany kolor jest poprawny
     public static boolean isColorValid(String color) {
@@ -291,49 +301,41 @@ public class TanksWorld implements Runnable {
         }
 
         synchronized (nameSet) {
-            if (nameSet.contains(name)) // już ktoś takie ma
-            {
-                return false;
-            }
-
-            // W tym momencie ten string przeszedł przez dekoder, więc automatycznie można go zakodować,
-            // więc jest poprawny
-            return true;
+            return !nameSet.contains(name);
         }
     }
 
     public static void removeEntity(Entity ent) {
         if (ent instanceof Newbie) {
+            final Newbie newbie = (Newbie) ent;
             synchronized (world.newbies) {
-                world.newbies.remove(ent);
+                world.newbies.remove(newbie);
             }
-            return;
-        }
-
-        if (ent instanceof God) {
+        } else if (ent instanceof God) {
+            final God god = (God) ent;
             synchronized (world.gods) {
-                world.gods.remove(ent);
+                world.gods.remove(god);
             }
-            return;
-        }
+        } else {
+            // Pozostałe elementy są przechowywane w 'entities'
+            synchronized (world.entities) {
 
-        // Pozostałe elementy są przechowywane w 'entities'
-        synchronized (world.entities) {
+                // wyślij powiadomienie o usunięciu
+                if (ent.getId() > -1) {
+                    world.broadcast(new RemoveEntity(ent));
+                }
 
-            // wyślij powiadomienie o usunięciu
-            if (ent.getId() > -1) {
-                world.broadcast(new RemoveEntity(ent));
-            }
+                // odśwież nazwy graczy
+                if (ent.humanControl()) {
+                    world.updateNames();
+                }
 
-            // odśwież nazwy graczy
-            if (ent.humanControl()) {
-                world.updateNames();
-            }
+                world.entities.remove(ent);
 
-            world.entities.remove(ent);
-
-            if (ent instanceof Soldier) {
-                world.soldiers.remove(ent);
+                if (ent instanceof Soldier) {
+                    final Soldier soldier = (Soldier) ent;
+                    world.soldiers.remove(soldier);
+                }
             }
         }
 
@@ -352,7 +354,6 @@ public class TanksWorld implements Runnable {
         }
 
         prepareFlag = frame;
-
         updateBuffer = ByteBuffer.allocate(UPDATEBUFFER_SIZE);
 
         // rozpoczynamy update od informacji o klatkach
@@ -360,7 +361,6 @@ public class TanksWorld implements Runnable {
     }
 
     private int maxUpdate = 0;	// zapamiętanie największego komunikatu odświeżenia
-
     private long frame = 0;	// aktualna klatka
 
     // wykorzystywane przez TimeStamp
@@ -379,7 +379,9 @@ public class TanksWorld implements Runnable {
     public void worldLogic() {
         long updateFrame = 0;
 
-        long now, newFrame = 0, delay = 10;
+        long now;
+        long newFrame;
+        long delay = 10;
 
         boolean updateSent = false;
         ByteBuffer addEntityBuffer = null;
@@ -388,7 +390,7 @@ public class TanksWorld implements Runnable {
         worldStartTime = startTime;
 
         System.out.println("StartTime:" + startTime);
-        Set<Entity> toRemove = new HashSet<Entity>();
+        final Set<Entity> toRemove = new HashSet<>();
 
         while (!endOfTheWorld) {
             toRemove.clear();
@@ -403,64 +405,9 @@ public class TanksWorld implements Runnable {
             // Wykonaj odpowiednią ilość symulacji
             if (newFrame > frame) {
                 updateSent = false;
-
-                synchronized (entities) {
-                    while (newFrame > frame) {
-                        frame++;
-                        Box self, other;
-
-                        for (Entity one : entities) {
-                            if (one instanceof Box) {
-                                self = (Box) one;
-
-                                if (self.simulate()) {	// jeżeli wykonano ruch to sprawdz kolizje
-                                    for (Entity two : entities) {
-                                        if (!(two instanceof Box)) {
-                                            continue;
-                                        }
-
-                                        other = (Box) two;
-
-                                        // nie sprawdzamy samego z soba
-                                        if (one == two) {
-                                            continue;
-                                        }
-
-                                        // zdarzyła się kolizja
-                                        if (Box.boundingTest(self, other)) {
-                                            Box.collision(self, other);
-                                            self.onTouch(other);
-                                            other.onTrigger(self);
-                                        }
-                                    }
-                                }
-                            }
-                            one.think(frame);	// działanie w tej klatce
-
-                            // proźba o usunięcie (nie dotyczy to graczy)
-                            if (one.removeMe()) {
-                                toRemove.add(one);
-                            }
-                        }
-
-                        // usuwanie elementów
-                        for (Entity one : toRemove) {
-                            removeEntity(one);
-                        }
-
-                        // dodawanie nowych elementów
-                        for (Box one : toSpawn) {
-                            synchronized (world.entities) {
-                                world.entities.add(one);
-                            }
-
-                            if (one.getId() > -1) {
-                                world.broadcast(new AddEntity(one));
-                            }
-                        }
-                    }
-                }
+                simulateFrames(newFrame, toRemove);
             }
+            
 
             // zbudowanie pakietu odświeżającego
             if (updateFrame < frame) {
@@ -469,78 +416,12 @@ public class TanksWorld implements Runnable {
                 if (playerListChanged) {
                     addEntityBuffer = ByteBuffer.allocate(UPDATEBUFFER_SIZE);
                 }
-
-                synchronized (entities) {
-                    for (Entity one : entities) {
-                        if (playerListChanged && one.getId() > -1) {
-                            protocol.send(addEntityBuffer, new AddEntity(one));
-
-                            // jeżeli ten entity jest kierowany przez gracza to utwórz update
-                            if (one instanceof Box && one.humanControl()) {
-                                protocol.send(addEntityBuffer, new Update((Box) one));
-
-                                if (one instanceof Soldier) {
-                                    protocol.send(addEntityBuffer, new Color(one));
-                                    protocol.send(addEntityBuffer, new Ammo((Soldier) one));
-                                }
-                            }
-                        }
-
-                        // Odświeżenie położenia
-                        if (one instanceof Box) {
-                            Box b = (Box) one;
-                            if (b.needsUpdate(frame)) {
-                                prepareUpdateBuffer();
-                                Packet updatePacket = new Update(b);
-                                protocol.send(updateBuffer, updatePacket);
-                                if (b.freshMeat() && b instanceof Soldier) {
-                                    protocol.send(updateBuffer, new Color(b));
-                                    protocol.send(updateBuffer, new Ammo((Soldier) b));
-                                }
-                            }
-                        }
-                    }
-                }
+                scheduleRefreshPackets(addEntityBuffer);
             }
 
             // wyślijmy czekające pakiety
             if (updateSent == false) {
-
-                updateBuffer.limit(updateBuffer.position());
-                updateBuffer.position(0);
-                if (addEntityBuffer != null) {
-                    addEntityBuffer.position(0);
-                }
-
-                int size = updateBuffer.limit();
-                if (size > maxUpdate) {
-                    maxUpdate = size;
-                    System.out.println("MaxUpdate:" + size);
-                }
-
-                synchronized (entities) {
-                    for (Entity one : entities) {
-                        if (one.humanControl() == false) {
-                            continue;
-                        }
-
-                        // sprawdza czy doszli nowi gracze i czy ten jest jednym z nich
-                        if (playerListChanged && one.freshMeat() && addEntityBuffer != null) {
-                            one.getProxy().send(new Frame(frame));
-                            one.getProxy().sendFromBuffer(addEntityBuffer);
-                            one.getProxy().send(new YouAre(one.getId()));
-                            one.noFreshMeat();
-                        }
-
-                        one.getProxy().sendFromBuffer(updateBuffer);
-
-                        // Wysyłanie pinga
-                        if (now >= one.getPingTime()) {
-                            one.getProxy().send(new Ping(new Long(frame).toString()));
-                            one.setPingTime(now + PING_TIMEOUT);
-                        }
-                    }
-                }
+                sendPendingPackets(addEntityBuffer, now);
                 updateSent = true;
                 // może się zdarzyć, że gracz dołączy w połowie klatki
                 if (addEntityBuffer != null) {
@@ -549,9 +430,141 @@ public class TanksWorld implements Runnable {
                 }
                 updateBuffer = emptyBuffer;
             }
-
         }
 
+        disconnectClients();
+    }
+
+    private void sendPendingPackets(ByteBuffer addEntityBuffer, long now) {
+        updateBuffer.limit(updateBuffer.position());
+        updateBuffer.position(0);
+        if (addEntityBuffer != null) {
+            addEntityBuffer.position(0);
+        }
+        
+        int size = updateBuffer.limit();
+        if (size > maxUpdate) {
+            maxUpdate = size;
+            System.out.println("MaxUpdate:" + size);
+        }
+        
+        synchronized (entities) {
+            for (Entity one : entities) {
+                if (one.humanControl() == false) {
+                    continue;
+                }
+                
+                // sprawdza czy doszli nowi gracze i czy ten jest jednym z nich
+                if (playerListChanged && one.freshMeat() && addEntityBuffer != null) {
+                    one.getProxy().send(new Frame(frame));
+                    one.getProxy().sendFromBuffer(addEntityBuffer);
+                    one.getProxy().send(new YouAre(one.getId()));
+                    one.noFreshMeat();
+                }
+                
+                one.getProxy().sendFromBuffer(updateBuffer);
+                
+                // Wysyłanie pinga
+                if (now >= one.getPingTime()) {
+                    one.getProxy().send(new Ping(new Long(frame).toString()));
+                    one.setPingTime(now + PING_TIMEOUT);
+                }
+            }
+        }
+    }
+
+    private void scheduleRefreshPackets(ByteBuffer addEntityBuffer) {
+        synchronized (entities) {
+            for (Entity one : entities) {
+                if (playerListChanged && one.getId() > -1) {
+                    protocol.send(addEntityBuffer, new AddEntity(one));
+                    
+                    // jeżeli ten entity jest kierowany przez gracza to utwórz update
+                    if (one instanceof Box && one.humanControl()) {
+                        protocol.send(addEntityBuffer, new Update((Box) one));
+                        
+                        if (one instanceof Soldier) {
+                            protocol.send(addEntityBuffer, new Color(one));
+                            protocol.send(addEntityBuffer, new Ammo((Soldier) one));
+                        }
+                    }
+                }
+                
+                // Odświeżenie położenia
+                if (one instanceof Box) {
+                    Box b = (Box) one;
+                    if (b.needsUpdate(frame)) {
+                        prepareUpdateBuffer();
+                        Packet updatePacket = new Update(b);
+                        protocol.send(updateBuffer, updatePacket);
+                        if (b.freshMeat() && b instanceof Soldier) {
+                            protocol.send(updateBuffer, new Color(b));
+                            protocol.send(updateBuffer, new Ammo((Soldier) b));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void simulateFrames(long newFrame, final Set<Entity> toRemove) {
+        synchronized (entities) {
+            while (newFrame > frame) {
+                frame++;
+                Box self, other;
+                
+                for (Entity one : entities) {
+                    if (one instanceof Box) {
+                        self = (Box) one;
+                        
+                        if (self.simulate()) {	// jeżeli wykonano ruch to sprawdz kolizje
+                            for (Entity two : entities) {
+                                if (!(two instanceof Box)) {
+                                    continue;
+                                }
+                                
+                                other = (Box) two;
+                                
+                                // nie sprawdzamy samego z soba
+                                if (one == two) {
+                                    continue;
+                                }
+                                
+                                // zdarzyła się kolizja
+                                if (Box.boundingTest(self, other)) {
+                                    Box.collision(self, other);
+                                    self.onTouch(other);
+                                    other.onTrigger(self);
+                                }
+                            }
+                        }
+                    }
+                    one.think(frame);	// działanie w tej klatce
+                    
+                    // proźba o usunięcie (nie dotyczy to graczy)
+                    if (one.removeMe()) {
+                        toRemove.add(one);
+                    }
+                }
+                
+                // usuwanie elementów
+                for (Entity one : toRemove) {
+                    removeEntity(one);
+                }
+                
+                // dodawanie nowych elementów
+                for (Box one : toSpawn) {
+                    entities.add(one);
+                    
+                    if (one.getId() > -1) {
+                        broadcast(new AddEntity(one));
+                    }
+                }
+            }
+        }
+    }
+
+    private void disconnectClients() {
         synchronized (entities) {
             for (Entity one : entities) {
                 if (one instanceof Soldier) {
@@ -574,7 +587,7 @@ public class TanksWorld implements Runnable {
     }
 
     // Dla Gods i Newbies są oddzielne kolekcje bo nie wpływają dynamicznie na świat.
-    private HashSet<God> gods = new HashSet<God>();
+    private final HashSet<God> gods = new HashSet<>();
 
     private God spawnGod(int id) {
         God god = new God(id);
@@ -584,7 +597,7 @@ public class TanksWorld implements Runnable {
         return god;
     }
 
-    private HashSet<Newbie> newbies = new HashSet<Newbie>();
+    final private HashSet<Newbie> newbies = new HashSet<>();
 
     private Newbie spawnNewbie() {	// tworzy entity dla nowego połączenia
         Newbie newbie = new Newbie();
@@ -597,9 +610,9 @@ public class TanksWorld implements Runnable {
     private int lastId = 0;
 
     // Pozostali (Soldier, Box) są przechowywani w entities i w swoich oddzielnych listach
-    final private HashSet<Entity> entities = new HashSet<Entity>();
-    final private HashSet<Soldier> soldiers = new HashSet<Soldier>();	// oba są synchronizowane po entities
-    final private HashSet<Spectator> spectators = new HashSet<Spectator>();
+    final private HashSet<Entity> entities = new HashSet<>();
+    final private HashSet<Soldier> soldiers = new HashSet<>();	// oba są synchronizowane po entities
+    final private HashSet<Spectator> spectators = new HashSet<>();
 
     // Wysłanie wiadomości do wszystkich
     private void broadcast(Packet msg) {
@@ -613,7 +626,7 @@ public class TanksWorld implements Runnable {
                 try {
                     s.getProxy().sendFromBuffer(tmpBuffer);
                 } catch (Exception e) {
-                    if (true) ;
+                   e.printStackTrace();
                 }
             }
 

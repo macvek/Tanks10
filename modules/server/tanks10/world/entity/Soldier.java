@@ -126,7 +126,7 @@ public class Soldier extends Box{
 		TanksWorld.getWorld().randomSpawnPoint(this);
 		
 		immediateUpdate = true;
-		TanksWorld.Spawn("SpawnSoldierAnim",vector);
+		TanksWorld.spawn("SpawnSoldierAnim",vector);
 		solid = true;
 	}
 	
@@ -246,8 +246,8 @@ public class Soldier extends Box{
 		}
 
 		b.move(0);
-		TanksWorld.SpawnBox(b);
-		TanksWorld.Spawn(b.fireAnim, id);
+		TanksWorld.spawnBox(b);
+		TanksWorld.spawn(b.fireAnim, id);
 	}
 	
 	@Override
@@ -282,7 +282,7 @@ public class Soldier extends Box{
 	@Override
 	public void kill() {
 		deathTime = new Date().getTime()+3000;
-		TanksWorld.Spawn("Explode", vector);
+		TanksWorld.spawn("Explode", vector);
 		// ustaw poza ekranem
 		vector[0] = -100000;
 		vector[1] = -100000;

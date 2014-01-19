@@ -47,7 +47,7 @@ public class Bullet extends Box{
 		if (distance > range) {
 			readyToRemove = true;
 			if ((this instanceof AmmoRocket) || (this instanceof AmmoTesla) || (this instanceof AmmoShell)) { 
-				TanksWorld.Spawn(explodeAnim, vector);
+				TanksWorld.spawn(explodeAnim, vector);
 				TanksWorld.getWorld().checkExplode(vector, explodeRange, damage * owner.damageMult, owner);
 			}
 		}	

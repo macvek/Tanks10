@@ -46,7 +46,7 @@ public class AmmoTesla extends Bullet{
 		TanksWorld.getWorld().checkExplode(vector, explodeRange, damage * owner.damageMult, owner);
 		
 		readyToRemove = true;
-		TanksWorld.Spawn(explodeAnim, vector);
+		TanksWorld.spawn(explodeAnim, vector);
 	}
 
 }
