@@ -33,10 +33,10 @@ import tanks10.world.TanksWorld;
 public class TanksServer implements Runnable {
 
     final int THREADPOOLSIZE = 32;
-    private PrintStream log;
-    private ServerSocketChannel server;
-    private ServerSocket socket;
-    private ExecutorService pool; // zbiór obsługujących wątków
+    final private PrintStream log;
+    final private ServerSocketChannel server;
+    final private ServerSocket socket;
+    final private ExecutorService pool; // zbiór obsługujących wątków
 
     /**
      * Po zainicjowaniu jest uruchamiany wątek który obsługuje połączenia,

@@ -318,7 +318,7 @@ var blaster = {
 			case 37 : flags |= LEFT; break;
 			case 38 : flags |= FRONT; break;
 			case 40 : flags |= BACK; break;
-			case 17 : 
+			case 32 : 
 				if (blaster.attackState == false) {
 					blaster.attackState = true;
 					window.socket.send(new TanksPacket("Attack",{state:1}));
@@ -354,7 +354,7 @@ var blaster = {
 			case 37 : flags = LEFT; break;
 			case 38 : flags = FRONT; break;
 			case 40 : flags = BACK; break;
-			case 17 : 
+			case 32 : 
 				if (blaster.attackState == true) {
 					blaster.attackState = false;
 					window.socket.send(new TanksPacket("Attack",{state:0}));
