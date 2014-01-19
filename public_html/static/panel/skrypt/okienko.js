@@ -53,9 +53,9 @@ var okienko = {
         var zindeks = okienko.zindeks++;
         node.css({zIndex: zindeks});
     },
-    wczytaj: function(href, onopen, onclose) {
+    wczytaj: function(href, openHandlerName, closeHandlerName) {
         $.get(href, function(data) {
-            okienko.wyswietl(href, data, {onclose: onclose, onopen: onopen});
+            okienko.wyswietl(href, data, {closeHandler: closeHandlerName, openHandler: openHandlerName});
         });
     },
     zapisanieDanych: function(name, body) {
@@ -132,8 +132,8 @@ var okienko = {
 
         $(".apend", node).click(function() {
 
-            if (obiekt.onclose)
-                window.okienko[obiekt.onclose](this);
+            if (obiekt.closeHandler)
+                window.okienko[obiekt.closeHandler](this);
 
             node.remove();
             okienko.pamiec[href] = null;
@@ -141,8 +141,8 @@ var okienko = {
         });
 
 
-        if (obiekt.onopen)
-            window.okienko[obiekt.onopen](this);
+        if (obiekt.openHandler)
+            window.okienko[obiekt.openHandler](this);
 
         okienko.pamiec[href] = node;
         okienko.ustaw(node);

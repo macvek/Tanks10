@@ -90,8 +90,10 @@ public class TanksServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        tanksServer = TanksServer.bootstrapServer("localhost", 4444);
+        tanksServer = TanksServer.bootstrapServer(TANKS_SERVER_IP, TANKS_SERVER_PORT);
     }
+    private final int TANKS_SERVER_PORT = 4444;
+    private final String TANKS_SERVER_IP = "localhost";
 
     @Override
     public void destroy() {
