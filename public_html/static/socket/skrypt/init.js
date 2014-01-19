@@ -33,7 +33,7 @@ function prepare_socket() {
 			var origOnDisconnect = socket.listener.onDisconnect;
 			socket.listener.onDisconnect = function() {
 				origOnDisconnect();
-				$("#backBuffer").css('background-image','url("panel/grafika/welcome.png")');
+				$("#backBuffer").css('background-image','url("static/panel/grafika/welcome.png")');
 				$("#pasekStanu").css({display:"none"});
 				window.blaster.onConnect = false;
 				window.blaster.haltKeyboard = true;
@@ -76,10 +76,10 @@ function prepare_socket() {
 				var type = Number(body.type);
 				alert(type);
 				switch(type) {
-				case 2: window.okienko.wczytaj("panel/menu/obserwuj.html","","obserwujMenu"); break;
+				case 2: window.okienko.wczytaj("static/panel/menu/obserwuj.html","","obserwujMenu"); break;
 				case 1:
 				case 4: 
-					$('#backBuffer').css('background-image','url("panel/grafika/miastox.png")');
+					$('#backBuffer').css('background-image','url("static/panel/grafika/miastox.png")');
 					$('#pasekStanu').css({display:"block"});
 					window.blaster.haltKeyboard = false;
 					break;

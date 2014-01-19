@@ -109,18 +109,8 @@ public class TanksServer implements Runnable{
 		}catch(Exception e){
 			usage();
 		}
-		
-		// Uruchomienie silnika gry
-		(new Thread(new TanksWorld())).start();
-		
-		TanksServer mainframe = null;
-		
-		try {
-			mainframe = new TanksServer(host,port,System.out);
-		}catch(Exception io) {
-			System.out.println("Nie udało się uruchomić serwera");
-			System.exit(0);
-		}
+                
+                TanksServer mainframe = bootstrapServer(host, port);
 		
 		// sprawdzenie czy ciągle działa
 		while(true) {
@@ -134,7 +124,20 @@ public class TanksServer implements Runnable{
 					return;
 				}
 			}
-			catch(Exception e){}
+			catch(InterruptedException e){}
 		}
 	}
+
+        public static TanksServer bootstrapServer(String host, int port) {
+            // Uruchomienie silnika gry
+            (new Thread(new TanksWorld())).start();
+            TanksServer mainframe = null;
+            try {
+                mainframe = new TanksServer(host,port,System.out);
+            }catch(IOException io) {
+                System.out.println("Nie udało się uruchomić serwera");
+                throw new RuntimeException(io);
+            }
+            return mainframe;
+        }
 }
