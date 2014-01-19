@@ -375,14 +375,17 @@ public class TanksWorld implements Runnable {
         return world.endOfTheWorld;
     }
 
+    private static final long SYSTEM_FPS = 100;
+    private static final long DELAY = 1000 / SYSTEM_FPS;
+    private long sleepTime = DELAY;
+
     // Główna pętla wątku świata
     public void worldLogic() {
         long updateFrame = 0;
 
         long now;
         long newFrame;
-        long delay = 10;
-
+        
         boolean updateSent = false;
         ByteBuffer addEntityBuffer = null;
 
@@ -397,18 +400,14 @@ public class TanksWorld implements Runnable {
             toSpawn.clear();
             // koncepcja liczenia klatek względem rozpoczęcia działania programu
             now = new Date().getTime();
-            newFrame = (int) ((now - startTime) / delay);
+            newFrame = (int) ((now - startTime) / DELAY);
 
-            /*
-             step = now - before;	// zliczenie kolejnego kroku
-             */
-            // Wykonaj odpowiednią ilość symulacji
+            adjustSleepTime(newFrame - frame);
             if (newFrame > frame) {
                 updateSent = false;
                 simulateFrames(newFrame, toRemove);
             }
             
-
             // zbudowanie pakietu odświeżającego
             if (updateFrame < frame) {
                 updateFrame = frame;
@@ -430,9 +429,26 @@ public class TanksWorld implements Runnable {
                 }
                 updateBuffer = emptyBuffer;
             }
+            
+            if (sleepTime > 0) {
+                try {
+                    Thread.sleep(sleepTime);
+                }
+                catch(InterruptedException e) {
+                }
+            }
         }
 
         disconnectClients();
+    }
+    
+    private void adjustSleepTime(long missedFrames) {
+        if (missedFrames == 0) {
+            sleepTime = DELAY;
+        }
+        else {
+            sleepTime = 0;
+        }
     }
 
     private void sendPendingPackets(ByteBuffer addEntityBuffer, long now) {
