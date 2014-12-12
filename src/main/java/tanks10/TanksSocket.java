@@ -16,8 +16,8 @@ along with Tanks10 Project.  If not, see <http://www.gnu.org/licenses/>.
 */
 package tanks10;
 import javax.swing.JApplet;
+import tanks10.mocked.JSObject;
 
-import netscape.javascript.*;
 /**
  * Klasa pośrednicząca w komunikacji przeglądarki z serwerem, za pomocą
  * dowolnego protokołu komunikacji.

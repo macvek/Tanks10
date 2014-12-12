@@ -8,7 +8,7 @@
         <servlet-name>default</servlet-name>
         <url-pattern>/static/*</url-pattern>
     </servlet-mapping>
-        <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/applet/*</url-pattern>
     </servlet-mapping>
@@ -22,4 +22,3 @@
         </session-timeout>
     </session-config>
 </web-app>
- 

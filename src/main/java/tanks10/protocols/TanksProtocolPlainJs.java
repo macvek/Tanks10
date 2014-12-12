@@ -18,10 +18,9 @@ package tanks10.protocols;
 
 import java.util.HashMap;
 import java.util.Map;
+import tanks10.mocked.JSException;
+import tanks10.mocked.JSObject;
 
-
-
-import netscape.javascript.*;
 /**
  * Realizacja protokołu po stronie apletu.
  * @author Macvek

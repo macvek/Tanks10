@@ -17,7 +17,7 @@ along with Tanks10 Project.  If not, see <http://www.gnu.org/licenses/>.
 package tanks10;
 
 import java.util.*;
-import netscape.javascript.*;
+import tanks10.mocked.JSObject;
 
 /**
  * @author Macvek
