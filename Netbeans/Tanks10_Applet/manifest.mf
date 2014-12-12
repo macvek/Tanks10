@@ -1,2 +1,0 @@
-Manifest-Version: 1.0
-Application-Name: Tanks10 Client applet
