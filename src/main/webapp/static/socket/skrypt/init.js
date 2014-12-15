@@ -2,7 +2,7 @@ var TANKS_SERVER_IP = "localhost";
 var TANKS_SERVER_PORT = 4444;
 
 function prepare_socket() {
-    var appletIsReady = function(applet) {
+    var appletIsReady = function (applet) {
 
         var host = TANKS_SERVER_IP;
         var port = TANKS_SERVER_PORT;
@@ -22,7 +22,7 @@ function prepare_socket() {
         // Przygotuj listener
 
         var origOnConnect = socket.listener.onConnect;
-        socket.listener.onConnect = function() {
+        socket.listener.onConnect = function () {
             origOnConnect();
             blaster.onConnect = true;
             blaster.timestampCount = 0;
@@ -34,7 +34,7 @@ function prepare_socket() {
         }
 
         var origOnDisconnect = socket.listener.onDisconnect;
-        socket.listener.onDisconnect = function() {
+        socket.listener.onDisconnect = function () {
             origOnDisconnect();
             $("#backBuffer").css('background-image', 'url("static/panel/grafika/welcome.png")');
             $("#pasekStanu").css({display: "none"});
@@ -48,7 +48,7 @@ function prepare_socket() {
 
         socket.listener.on("Spawn", blaster.Spawn);
         socket.listener.on("AddEntity", blaster.AddEntity);
-        socket.listener.on("Model", function(name, body) {
+        socket.listener.on("Model", function (name, body) {
             var id = body.id;
             var obj;
             if (!id || !(obj = blaster.objects[id]))
@@ -72,10 +72,10 @@ function prepare_socket() {
         socket.listener.on("Ammo", blaster.Ammo);
         socket.listener.on("TabelaWynikowKoniec", okienko.wyswietlenieDanych);
         socket.listener.on("Say", okienko.wiadomosc);
-        socket.listener.on("Ping", function(name, body) {
+        socket.listener.on("Ping", function (name, body) {
             socket.send(new window.TanksPacket("Pong", {f: body.f}));
         });
-        socket.listener.on("Hello", function(name, body) {
+        socket.listener.on("Hello", function (name, body) {
             var type = Number(body.type);
             alert(type);
             switch (type) {
@@ -95,11 +95,11 @@ function prepare_socket() {
 
         socket.connect(host, port);
 
-        var console = {write: function(msg) {
+        var console = {write: function (msg) {
                 document.getElementById("console").innerHTML += msg + "\n";
             }};
         applet.registerConsole(console);
     }
 
-    TanksApplet("socket", appletIsReady);
+    appletIsReady(new TanksSocket());
 }
