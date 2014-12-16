@@ -2,9 +2,13 @@ function TanksProtocolPlainJs2() {
     var UNSUPPORTED = "unsupported";
 
     this.listener = null;
+    this.send = send;
+    this.receive = receive;
+
     var END_OF_PACKET = ';';
 
     var args = [];
+    var self = this;
 
     function send(buffer, msg) {
         var sendFields = {};
@@ -20,7 +24,7 @@ function TanksProtocolPlainJs2() {
             packet += key + "=" + value + ",";
 
         });
-        packet = packet.substr(0, packet.length - 1);
+        packet = packet.substring(0, packet.length - 1);
         packet += END_OF_PACKET;
         packet += "\r\n";
 
@@ -47,7 +51,7 @@ function TanksProtocolPlainJs2() {
         var messageHead = input.messageHead;
         var messageName = input.messageName;
 
-        for (var i=0;i<messageHead.length;i++) {
+        for (var i = 0; i < messageHead.length; i++) {
             var fieldName = messageHead[i];
             if (fieldName == null) {
                 break;
@@ -65,7 +69,7 @@ function TanksProtocolPlainJs2() {
     }
 
     function decodeEnd() {
-        this.listener.onMessage(args);
+        self.listener.onMessage(args);
         args = [];
     }
 
@@ -79,10 +83,11 @@ function TanksProtocolPlainJs2() {
         while (buffer.mark < text.length) {
             cursor = buffer.mark;
             if (!findNextEnd(buffer)) {
-                return;
+                break;
             }
 
-            parsePacket(text.substr(cursor, buffer.mark));
+            parsePacket(text.substring(cursor, buffer.mark));
+            buffer.mark += 1;
         }
 
         decodeEnd();
@@ -96,12 +101,12 @@ function TanksProtocolPlainJs2() {
             return;
         }
 
-        var name = input.substr(0, colonIndex);
+        var name = input.substring(0, colonIndex);
         if (name.length === 0) {
             return;
         }
         name = name.trim();
-        var other = input.substr(colonIndex, input.length);
+        var other = input.substring(colonIndex, input.length);
         var fields = other.split(",");
 
         for (var i = 0; i < fields.length; i++) {
@@ -125,17 +130,15 @@ function TanksProtocolPlainJs2() {
     function findNextEnd(buffer) {
         var text = buffer.text;
         var mark = buffer.mark;
-        var position = text.substr(mark, text.length).indexOf(END_OF_PACKET)
+
+        var position = text.substring(mark, text.length).indexOf(END_OF_PACKET);
         if (position === -1) {
             buffer.mark = buffer.text.length;
             return false;
         }
         else {
-            buffer.mark = position;
+            buffer.mark = mark + position;
             return true;
         }
     }
-
-    this.send = send;
-    this.receive = receive;
 }

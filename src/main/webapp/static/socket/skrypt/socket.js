@@ -31,7 +31,7 @@ function TanksSocket(socketApplet) {
 
         _message: {
             _error: function (messageName) {
-                alert("nieznany pakiet " + messageName);
+                console.log("nieznany pakiet " + messageName);
             }
         },
         // callback jest to : function(messageName,messageBody) ...
@@ -47,14 +47,34 @@ function TanksSocket(socketApplet) {
             }
         },
         // Aktualna wersja która działa z TanksProtocolPlainJs2
-        onMessage: function () {
+        onMessage: function (args) {
             var newMessage = true;
-            var param = true;
             var messageName = "";
             var messageBody = {};
 
             var self = this;
-            var executePacket = function (name, body) {
+            
+            for (i = 0; i < args.length; i++) {
+                var arg = args[i];
+                if (newMessage) {
+                    newMessage = false;
+                    messageName = arg;
+                    continue;
+                }
+
+                if (arg == "\n") {
+                    newMessage = true;
+                    executePacket(messageName, messageBody);
+                    messageName = "";
+                    messageBody = {};
+                    continue;
+                }
+
+                messageBody[arg] = args[i + 1];
+                i++;
+            }
+            
+            function executePacket(name, body) {
                 var handlers = self._message[name];
 
                 // Nieznany pakiet, uruchom zdarzenie błędu
@@ -67,25 +87,6 @@ function TanksSocket(socketApplet) {
                         handlers[index](name, body);
                     }
                 }
-            };
-
-            for (i = 0; i < arguments.length; i++) {
-                if (newMessage) {
-                    newMessage = false;
-                    messageName = arguments[i];
-                    continue;
-                }
-
-                if (arguments[i] == "\n") {
-                    newMessage = true;
-                    executePacket(messageName, messageBody);
-                    messageName = "";
-                    messageBody = {};
-                    continue;
-                }
-
-                messageBody[arguments[i]] = arguments[i + 1];
-                i++;
             }
 
         },
