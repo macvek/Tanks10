@@ -106,7 +106,7 @@ function TanksProtocolPlainJs2() {
             return;
         }
         name = name.trim();
-        var other = input.substring(colonIndex, input.length);
+        var other = input.substring(colonIndex+1, input.length);
         var fields = other.split(",");
 
         for (var i = 0; i < fields.length; i++) {
@@ -116,7 +116,7 @@ function TanksProtocolPlainJs2() {
                 continue;
             }
 
-            if (attrParts[0].length() === 0 || attrParts[1].length() === 0) {
+            if (attrParts[0].length === 0 || attrParts[1].length === 0) {
                 continue;
             }
 
