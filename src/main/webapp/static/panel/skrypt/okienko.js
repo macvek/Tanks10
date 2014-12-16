@@ -155,10 +155,10 @@ $(document).ready(function() {
         if (!href)
             return;
 
-        var onclose = $(this).attr("onclose");
-        var onopen = $(this).attr("onopen");
+        var closehandler = $(this).attr("closehandler");
+        var openhandler = $(this).attr("openhandler");
 
-        okienko.wczytaj(href, onopen, onclose);
+        okienko.wczytaj(href, openhandler, closehandler);
         return false;
     });
 });

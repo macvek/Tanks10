@@ -7,21 +7,25 @@ function ConnectionManager(listener, tanksSocket) {
     var protocol = new TanksProtocolPlainJs2();
     protocol.listener = listener;
     
+    var self = this;
 
     function run() {
         var receiveBuffer = {text:"",mark:0};
         
         socket = new WebSocket("ws://localhost:8080/TanksServlet/socket/server");
         socket.onopen = function () {
+            self.connected = true;
             listener.onConnect();
         };
 
         socket.onerror = function (evt) {
             listener.onConnectionError(BLAD_IOEXCEPTION);
+            self.connected = false;
             console.log(env);
         };
 
         socket.onclose = function () {
+            self.connected = false;
             listener.onDisconnect();
         };
         
@@ -53,7 +57,7 @@ function ConnectionManager(listener, tanksSocket) {
 }
 
 
-function TanksSocket() {
+function TanksApplet() {
     var errorMsg = [
         "Operacja wykonana poprawnie", // kod 0 
         "Nieprawidłowy obiekt konsoli", // kod 1
@@ -91,7 +95,8 @@ function TanksSocket() {
     this.send = send;
     this.connect = connect;
     this.disconnect = disconnect;
-    this.getErrorCode = getErrorCode;
+    this.getErrorMsg = getErrorMsg;
+    this.registerConsole = registerConsole;
 
     function register(conf) {
         if (!registered) {
@@ -139,6 +144,8 @@ function TanksSocket() {
         connection.lock = true;
         connection.run();
         console.log("connect()");
+        
+        return 0;
     }
 
     function disconnect() {
@@ -159,7 +166,7 @@ function TanksSocket() {
         return 0;
     }
 
-    function getErrorCode(codeNumber) {
+    function getErrorMsg(errorCode) {
         if (errorCode >= 0 && errorCode < errorMsg.length)
             return errorMsg[errorCode];
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!doctype html> 
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html;charset=utf-8" />
@@ -15,7 +15,7 @@
         <script type="text/javascript" src="static/render/spawn.js"></script>
         <script type="text/javascript" src="static/render/entity.js"></script>
 
-        <script src="static/socket/skrypt/TanksSocket.js"></script>
+        <script src="static/socket/skrypt/TanksApplet.js"></script>
         <script src="static/socket/skrypt/TanksProtocolPlainJs2.js"></script>
         <script src="static/socket/skrypt/socket.js"></script>
         <script src="static/socket/skrypt/init.js"></script>
@@ -30,21 +30,21 @@
 
         <div id="menu">
             <ul class="menu">
-                <li id="graj"><a href="static/panel/menu/polacz.html" class="rodzic" onclose="polaczMenu"><span>Graj</span></a></li>
+                <li id="graj"><a href="static/panel/menu/polacz.html" class="rodzic" closehandler="polaczMenu"><span>Graj</span></a></li>
                 <li><a><span>Menu Glowne</span></a>
                     <ul>
-                        <li id="tabelaW"><a href="static/panel/menu/wyniki.html" onclose="closeWyniki" onopen="openWyniki"><span>Tabela wynikow</span></a></li> 
+                        <li id="tabelaW"><a href="static/panel/menu/wyniki.html" closehandler="closeWyniki" openhandler="openWyniki"><span>Tabela wynikow</span></a></li> 
 
-                        <li id="zmienImie"><a href="static/panel/menu/zmienImie.html" onopen="zmienImieEnter" onclose="zmienImieMenu"><span>Zmien imie</span></a></li>
-                        <li id="zmienKolor"><a href="static/panel/menu/zmienKolor.html" onclose="zmienKolorMenu"><span>Zmien kolor</span></a></li>
+                        <li id="zmienImie"><a href="static/panel/menu/zmienImie.html" openhandler="zmienImieEnter" closehandler="zmienImieMenu"><span>Zmien imie</span></a></li>
+                        <li id="zmienKolor"><a href="static/panel/menu/zmienKolor.html" closehandler="zmienKolorMenu"><span>Zmien kolor</span></a></li>
 
                         <li id="komunikacja"><a href="static/panel/menu/komunikacja.html"><span>Sterowanie</span></a></li>
                     </ul>
                 </li>
                 <li><a><span>Menu Broni</span></a>
                     <ul>
-                        <li id="tabelaBroni"><a href="static/panel/menu/tabelaBroni.html" onclose="zmienBronMenu"><span>Bron</span></a></li>
-                        <li id="tabelaCzolgu"><a href="static/panel/menu/tabelaCzolgu.html" onclose="zmienCzolgMenu" ><span>Czolg</span></a></li>
+                        <li id="tabelaBroni"><a href="static/panel/menu/tabelaBroni.html" closehandler="zmienBronMenu"><span>Bron</span></a></li>
+                        <li id="tabelaCzolgu"><a href="static/panel/menu/tabelaCzolgu.html" closehandler="zmienCzolgMenu" ><span>Czolg</span></a></li>
                     </ul>
                 </li>
 

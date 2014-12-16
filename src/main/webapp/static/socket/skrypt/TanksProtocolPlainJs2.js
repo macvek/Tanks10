@@ -4,7 +4,7 @@ function TanksProtocolPlainJs2() {
     this.listener = null;
     var END_OF_PACKET = ';';
 
-    var arguments = [];
+    var args = [];
 
     function send(buffer, msg) {
         var sendFields = {};
@@ -21,8 +21,8 @@ function TanksProtocolPlainJs2() {
 
         });
         packet = packet.substr(0, packet.length - 1);
-        packet.append(END_OF_PACKET);
-        packet.append("\r\n");
+        packet += END_OF_PACKET;
+        packet += "\r\n";
 
         buffer.buffered = packet;
         return true;
@@ -33,13 +33,13 @@ function TanksProtocolPlainJs2() {
     }
 
     function decode(name, field) {
-        arguments.push(name);
+        args.push(name);
         $.each(field, function (i, v) {
-            arguments.push(i);
-            arguments.push("" + v);
+            args.push(i);
+            args.push("" + v);
         });
 
-        arguments.add("\n");
+        args.push("\n");
     }
 
     function encode(input, field) {
@@ -47,28 +47,26 @@ function TanksProtocolPlainJs2() {
         var messageHead = input.messageHead;
         var messageName = input.messageName;
 
-        var i = 0;
-        while (true) {
+        for (var i=0;i<messageHead.length;i++) {
             var fieldName = messageHead[i];
-            if (fieldName === null) {
+            if (fieldName == null) {
                 break;
             }
-            i++;
 
             var fieldValue = messageParams[fieldName];
-            if (fieldValue === null) {
+            if (fieldValue == null) {
                 continue;
             }
 
-            field.put(fieldName, fieldValue);
+            field[fieldName] = fieldValue;
         }
 
         return messageName;
     }
 
     function decodeEnd() {
-        this.listener.onMessage(arguments);
-        arguments = [];
+        this.listener.onMessage(args);
+        args = [];
     }
 
     function connectionLost() {

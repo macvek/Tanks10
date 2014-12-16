@@ -4,24 +4,24 @@ window.socket = {
     }
 };
 
-var TanksPacket = function (name, src) {
+function TanksPacket(name, src) {
     if (null == src)
         src = {};
 
     src._name = name;
     return src;
-};
+}
 
-var Set = function (iName, iValue) {
+function Set(iName, iValue) {
     return new TanksPacket("SetAttribute", {name: iName, value: iValue});
-};
+}
 
-var TanksSocket = function (socketApplet) {
+function TanksSocket(socketApplet) {
     var socket = socketApplet;
     var parent = this;
 
     this.log = function (msg, code) {
-        alert(msg + " : " + code, "Błąd");
+        console.log(msg + " : " + code, "Błąd");
     };
     this.status = false;	// status połączenia
 
@@ -176,4 +176,4 @@ var TanksSocket = function (socketApplet) {
             alert(socket.getErrorMsg(result));
         }
     };
-};
+}

@@ -101,5 +101,5 @@ function prepare_socket() {
         applet.registerConsole(console);
     }
 
-    appletIsReady(new TanksSocket());
+    appletIsReady(new TanksApplet());
 }
