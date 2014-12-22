@@ -424,7 +424,7 @@ var blaster = {
 		blaster.frame = newFrame;
 		$("#clientFrame").html(now+":"+blaster.startTime+":"+blaster.serverDelay+":"+blaster.frame);
 		
-		// Te obiekty nie sa synchronizowane
+                // Te obiekty nie sa synchronizowane
 		for (i in spawnDownObjects) {
 			spawnDownObjects[i].simulate(step);
 		}

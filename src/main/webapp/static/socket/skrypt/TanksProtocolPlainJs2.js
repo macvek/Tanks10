@@ -19,12 +19,16 @@ function TanksProtocolPlainJs2() {
         }
 
         var packet = name + ":";
+        var stripLastChar = false;
         $.each(sendFields, function (key, v) {
             var value = formatValue(v);
             packet += key + "=" + value + ",";
+            stripLastChar = true;
 
         });
-        packet = packet.substring(0, packet.length - 1);
+        if (stripLastChar) {
+            packet = packet.substring(0, packet.length - 1);
+        }
         packet += END_OF_PACKET;
         packet += "\r\n";
 
