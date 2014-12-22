@@ -48,7 +48,7 @@ body {
 }
 
 .debug {
-	/* display:none; */
+	display:none;
 }
 
 #chat {

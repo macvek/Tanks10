@@ -1,9 +1,4 @@
 
-window.socket = {
-    send: function () {
-    }
-};
-
 function TanksPacket(name, src) {
     if (null == src)
         src = {};

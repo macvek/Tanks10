@@ -19,11 +19,13 @@ function ConnectionManager(listener, tanksSocket) {
         socket.onerror = function (evt) {
             listener.onConnectionError(BLAD_IOEXCEPTION);
             self.connected = false;
+            self.lock = false;
             console.log(env);
         };
 
         socket.onclose = function () {
             self.connected = false;
+            self.lock = false;
             listener.onDisconnect();
         };
         
@@ -52,8 +54,13 @@ function ConnectionManager(listener, tanksSocket) {
         return true;
     }
     
+    function close() {
+        socket.close();
+    }
+    
     this.run = run;
     this.send = send;
+    this.close = close;
 }
 
 
