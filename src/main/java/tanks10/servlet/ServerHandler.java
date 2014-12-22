@@ -28,13 +28,11 @@ public class ServerHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        super.afterConnectionClosed(session, status);
         sessionMap.remove(session);
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        super.afterConnectionEstablished(session);
         final ClientHandler clientHandler = new ClientHandler(session);
         sessionMap.put(session, clientHandler);
     }

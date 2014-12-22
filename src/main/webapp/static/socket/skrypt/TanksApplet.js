@@ -10,8 +10,6 @@ function ConnectionManager(listener, tanksSocket) {
     var self = this;
 
     function run() {
-        var receiveBuffer = {text:"",mark:0};
-        
         socket = new WebSocket("ws://localhost:8080/TanksServlet/socket/server");
         socket.onopen = function () {
             self.connected = true;
@@ -34,9 +32,11 @@ function ConnectionManager(listener, tanksSocket) {
         };
         
         function handleData(data) {
-            receiveBuffer.text += data;
+            var receiveBuffer = {
+                text: data,
+                mark: 0
+            };
             protocol.receive(receiveBuffer);
-            receiveBuffer.text = receiveBuffer.text.substring(receiveBuffer.mark, receiveBuffer.length);
         }
     }
     

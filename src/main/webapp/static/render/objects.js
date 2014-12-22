@@ -329,7 +329,7 @@ var Weapon = {
 	switchWeapon : function(tank) {
 		var type = Number(tank.ammo);
 		
-		alert("! "+type);
+		alert("switch weapon to: "+type);
 		
 		if (type == null)
 			return;

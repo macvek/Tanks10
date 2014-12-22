@@ -47,7 +47,8 @@ public class TanksWorld implements Runnable {
 
     // lista obiektów do utworzenia przy kolejnej klatce
     private final Set<Box> toSpawn = new HashSet<>();
-    
+    private final Set<Entity> toRemove = new HashSet<>();
+
     // Ustawiany jako updateBuffer gdy nie ma nic do wysłania
     private final ByteBuffer emptyBuffer = ByteBuffer.allocate(0);
 
@@ -306,39 +307,47 @@ public class TanksWorld implements Runnable {
     }
 
     public static void removeEntity(Entity ent) {
-        if (ent instanceof Newbie) {
-            final Newbie newbie = (Newbie) ent;
-            synchronized (world.newbies) {
-                world.newbies.remove(newbie);
-            }
-        } else if (ent instanceof God) {
-            final God god = (God) ent;
-            synchronized (world.gods) {
-                world.gods.remove(god);
-            }
-        } else {
-            // Pozostałe elementy są przechowywane w 'entities'
-            synchronized (world.entities) {
-
-                // wyślij powiadomienie o usunięciu
-                if (ent.getId() > -1) {
-                    world.broadcast(new RemoveEntity(ent));
-                }
-
-                // odśwież nazwy graczy
-                if (ent.humanControl()) {
-                    world.updateNames();
-                }
-
-                world.entities.remove(ent);
-
-                if (ent instanceof Soldier) {
-                    final Soldier soldier = (Soldier) ent;
-                    world.soldiers.remove(soldier);
-                }
-            }
+        synchronized(world.toRemove) {
+            world.toRemove.add(ent);
         }
+    }
 
+    private void removeEntitiesFromList() {
+        synchronized (toRemove) {
+
+            for (Entity ent : toRemove) {
+                if (ent instanceof Newbie) {
+                    final Newbie newbie = (Newbie) ent;
+                    synchronized (world.newbies) {
+                        world.newbies.remove(newbie);
+                    }
+                } else if (ent instanceof God) {
+                    final God god = (God) ent;
+                    synchronized (world.gods) {
+                        world.gods.remove(god);
+                    }
+                } else {
+
+                    // wyślij powiadomienie o usunięciu
+                    if (ent.getId() > -1) {
+                        world.broadcast(new RemoveEntity(ent));
+                    }
+
+                    // odśwież nazwy graczy
+                    if (ent.humanControl()) {
+                        world.updateNames();
+                    }
+
+                    world.entities.remove(ent);
+
+                    if (ent instanceof Soldier) {
+                        final Soldier soldier = (Soldier) ent;
+                        world.soldiers.remove(soldier);
+                    }
+                }
+            }
+            toRemove.clear();
+        }
     }
 
     @Override
@@ -385,7 +394,7 @@ public class TanksWorld implements Runnable {
 
         long now;
         long newFrame;
-        
+
         boolean updateSent = false;
         ByteBuffer addEntityBuffer = null;
 
@@ -393,10 +402,8 @@ public class TanksWorld implements Runnable {
         worldStartTime = startTime;
 
         System.out.println("StartTime:" + startTime);
-        final Set<Entity> toRemove = new HashSet<>();
 
         while (!endOfTheWorld) {
-            toRemove.clear();
             toSpawn.clear();
             // koncepcja liczenia klatek względem rozpoczęcia działania programu
             now = new Date().getTime();
@@ -407,7 +414,7 @@ public class TanksWorld implements Runnable {
                 updateSent = false;
                 simulateFrames(newFrame, toRemove);
             }
-            
+
             // zbudowanie pakietu odświeżającego
             if (updateFrame < frame) {
                 updateFrame = frame;
@@ -429,24 +436,22 @@ public class TanksWorld implements Runnable {
                 }
                 updateBuffer = emptyBuffer;
             }
-            
+
             if (sleepTime > 0) {
                 try {
                     Thread.sleep(sleepTime);
-                }
-                catch(InterruptedException e) {
+                } catch (InterruptedException e) {
                 }
             }
         }
 
         disconnectClients();
     }
-    
+
     private void adjustSleepTime(long missedFrames) {
         if (missedFrames == 0) {
             sleepTime = DELAY;
-        }
-        else {
+        } else {
             sleepTime = 0;
         }
     }
@@ -457,19 +462,19 @@ public class TanksWorld implements Runnable {
         if (addEntityBuffer != null) {
             addEntityBuffer.position(0);
         }
-        
+
         int size = updateBuffer.limit();
         if (size > maxUpdate) {
             maxUpdate = size;
             System.out.println("MaxUpdate:" + size);
         }
-        
+
         synchronized (entities) {
             for (Entity one : entities) {
                 if (one.humanControl() == false) {
                     continue;
                 }
-                
+
                 // sprawdza czy doszli nowi gracze i czy ten jest jednym z nich
                 if (playerListChanged && one.freshMeat() && addEntityBuffer != null) {
                     one.getProxy().send(new Frame(frame));
@@ -477,12 +482,12 @@ public class TanksWorld implements Runnable {
                     one.getProxy().send(new YouAre(one.getId()));
                     one.noFreshMeat();
                 }
-                
+
                 one.getProxy().sendFromBuffer(updateBuffer);
-                
+
                 // Wysyłanie pinga
                 if (now >= one.getPingTime()) {
-                    one.getProxy().send(new Ping(new Long(frame).toString()));
+                    one.getProxy().send(new Ping(Long.toString(frame)));
                     one.setPingTime(now + PING_TIMEOUT);
                 }
             }
@@ -494,18 +499,18 @@ public class TanksWorld implements Runnable {
             for (Entity one : entities) {
                 if (playerListChanged && one.getId() > -1) {
                     protocol.send(addEntityBuffer, new AddEntity(one));
-                    
+
                     // jeżeli ten entity jest kierowany przez gracza to utwórz update
                     if (one instanceof Box && one.humanControl()) {
                         protocol.send(addEntityBuffer, new Update((Box) one));
-                        
+
                         if (one instanceof Soldier) {
                             protocol.send(addEntityBuffer, new Color(one));
                             protocol.send(addEntityBuffer, new Ammo((Soldier) one));
                         }
                     }
                 }
-                
+
                 // Odświeżenie położenia
                 if (one instanceof Box) {
                     Box b = (Box) one;
@@ -528,24 +533,24 @@ public class TanksWorld implements Runnable {
             while (newFrame > frame) {
                 frame++;
                 Box self, other;
-                
+
                 for (Entity one : entities) {
                     if (one instanceof Box) {
                         self = (Box) one;
-                        
+
                         if (self.simulate()) {	// jeżeli wykonano ruch to sprawdz kolizje
                             for (Entity two : entities) {
                                 if (!(two instanceof Box)) {
                                     continue;
                                 }
-                                
+
                                 other = (Box) two;
-                                
+
                                 // nie sprawdzamy samego z soba
                                 if (one == two) {
                                     continue;
                                 }
-                                
+
                                 // zdarzyła się kolizja
                                 if (Box.boundingTest(self, other)) {
                                     Box.collision(self, other);
@@ -556,22 +561,19 @@ public class TanksWorld implements Runnable {
                         }
                     }
                     one.think(frame);	// działanie w tej klatce
-                    
+
                     // proźba o usunięcie (nie dotyczy to graczy)
                     if (one.removeMe()) {
                         toRemove.add(one);
                     }
                 }
-                
-                // usuwanie elementów
-                for (Entity one : toRemove) {
-                    removeEntity(one);
-                }
-                
+
+                removeEntitiesFromList();
+
                 // dodawanie nowych elementów
                 for (Box one : toSpawn) {
                     entities.add(one);
-                    
+
                     if (one.getId() > -1) {
                         broadcast(new AddEntity(one));
                     }
@@ -642,7 +644,7 @@ public class TanksWorld implements Runnable {
                 try {
                     s.getProxy().sendFromBuffer(tmpBuffer);
                 } catch (Exception e) {
-                   e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
 

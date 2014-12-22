@@ -16,7 +16,6 @@
  */
 package tanks10;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
@@ -40,6 +39,8 @@ public class SendAndReceive {
 
     private final ByteBuffer[] sendBuffers = new ByteBuffer[SENDLIMIT];
 
+    private static final Logger LOG = Logger.getLogger(SendAndReceive.class.getName());
+
     final static int BUFFERSIZE = 8196;
     final static int SENDLIMIT = 128;
 
@@ -47,11 +48,15 @@ public class SendAndReceive {
     protected TanksProtocol protocol;
 
     public boolean kill = false;
+    private boolean closed = false;
 
     /**
      * Umieszczenie bufora w kolejce do wysłania
      */
     public void addToSendBuffers(ByteBuffer in) {
+        if (closed) {
+            return;
+        }
         if (kill) {
             closeSession();
         } else {
@@ -71,7 +76,8 @@ public class SendAndReceive {
                 try {
                     session.sendMessage(message);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    LOG.log(Level.WARNING, "send message failed to " + session.getRemoteAddress().toString(), e);
+                    closeSession();
                 }
             }
         }
@@ -80,9 +86,11 @@ public class SendAndReceive {
 
     private void closeSession() throws RuntimeException {
         try {
+            closed = true;
+            protocol.connectionLost();
             session.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "close session failed for " + session.getRemoteAddress().toString(), e);
         }
     }
 
@@ -92,9 +100,9 @@ public class SendAndReceive {
             ByteBuffer readBuffer = ByteBuffer.wrap(backingArray);
             protocol.receive(readBuffer);
         } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(ex);
+            LOG.log(Level.SEVERE, "message parsing failed for: " + session.getRemoteAddress().toString() + " msg:" + msg, ex);
         }
-        
+
     }
 
 }

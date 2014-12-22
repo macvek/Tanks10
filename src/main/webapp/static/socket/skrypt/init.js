@@ -40,9 +40,9 @@ function prepare_socket() {
             $("#pasekStanu").css({display: "none"});
             window.blaster.onConnect = false;
             window.blaster.haltKeyboard = true;
-            //alert("onDisconnect()");
+            alert("onDisconnect()");
 
-        }
+        };
 
         // Dodaj reakcje na wiadomosci
 
@@ -77,7 +77,6 @@ function prepare_socket() {
         });
         socket.listener.on("Hello", function (name, body) {
             var type = Number(body.type);
-            alert(type);
             switch (type) {
                 case 2:
                     window.okienko.wczytaj("static/panel/menu/obserwuj.html", "", "obserwujMenu");
