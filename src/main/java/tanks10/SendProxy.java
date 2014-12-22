@@ -1,5 +1,5 @@
 /*
-This file is part of Tanks10 Project (http://tanks10.sourceforge.net/).
+This file is part of Tanks10 Project (https://github.com/macvek/Tanks10).
 
 Foobar is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
