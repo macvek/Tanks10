@@ -1,11 +1,5 @@
-var TANKS_SERVER_IP = "localhost";
-var TANKS_SERVER_PORT = 4444;
-
 function prepare_socket() {
     var appletIsReady = function (applet) {
-
-        var host = TANKS_SERVER_IP;
-        var port = TANKS_SERVER_PORT;
 
         if (window.socket && window.socket.connect) {
             if (window.socket.status) {
@@ -13,7 +7,7 @@ function prepare_socket() {
             }
 
             // więc tylko wykonaj połączenie
-            window.socket.connect(host, port);
+            window.socket.connect();
             return;
         }
         window.socket = new TanksSocket(applet);
@@ -31,7 +25,7 @@ function prepare_socket() {
             blaster.objects = {};
             blaster.spawnTopObjects = {};
             blaster.spawnDownObjects = {};
-        }
+        };
 
         var origOnDisconnect = socket.listener.onDisconnect;
         socket.listener.onDisconnect = function () {
@@ -98,7 +92,7 @@ function prepare_socket() {
                 document.getElementById("console").innerHTML += msg + "\n";
             }};
         applet.registerConsole(console);
-    }
+    };
 
     appletIsReady(new TanksApplet());
 }

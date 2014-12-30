@@ -18,8 +18,6 @@ package tanks10;
 
 import tanks10.protocols.*;
 
-import java.io.*;
-import javax.websocket.Session;
 import org.springframework.web.socket.WebSocketSession;
 
 import tanks10.world.Entity;

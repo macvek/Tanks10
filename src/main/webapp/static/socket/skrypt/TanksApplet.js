@@ -10,7 +10,7 @@ function ConnectionManager(listener, tanksSocket) {
     var self = this;
 
     function run() {
-        socket = new WebSocket("ws://localhost:8080/TanksServlet/socket/server");
+        socket = new WebSocket("ws://"+document.location.host+"/TanksServlet/socket/server");
         socket.onopen = function () {
             self.connected = true;
             listener.onConnect();
@@ -107,18 +107,7 @@ function TanksApplet() {
 
     function register(conf) {
         if (!registered) {
-            port = conf.port;
-            host = conf.host;
             listener = conf.listener;
-
-            if (port === null)
-                return BLAD_KONWERSJI;
-
-            if (port < 1024 || port > 65535)
-                return BLAD_PORT;
-
-            if (host === null)
-                return BLAD_KONWERSJI;
 
             if (listener === null)
                 return BLAD_KONWERSJI;

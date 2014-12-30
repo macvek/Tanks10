@@ -36,8 +36,7 @@ import java.nio.charset.*;
  */
 
 abstract public class TanksProtocolPlain extends TanksProtocol{
-	// ustalenie trybu kodowania znaków (US-ASCII bo każdy bajt zajmuje tyle samo)
-	final static private Charset coder = Charset.availableCharsets().get("ISO-8859-2");
+	final static private Charset coder = Charset.availableCharsets().get("UTF-8");
 	final static char END_OF_PACKET=';';
 	private HashMap<String,Object> readFields = new HashMap<String,Object>();
 	

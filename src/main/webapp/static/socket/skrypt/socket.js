@@ -147,10 +147,10 @@ function TanksSocket(socketApplet) {
         });
     };
 
-    this.connect = function (remoteHost, remotePort) {
+    this.connect = function () {
         // zarejestruj listener i podaj dane do połączenia
 
-        var result = socket.register({host: remoteHost, port: remotePort, listener: this.listener});
+        var result = socket.register({listener: this.listener});
 
         if (result !== 0) {
             this.log("Błąd podczas rejestracji połączenia", socket.getErrorMsg(result));
