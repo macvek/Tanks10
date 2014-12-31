@@ -30,6 +30,7 @@ function prepare_socket() {
         var origOnDisconnect = socket.listener.onDisconnect;
         socket.listener.onDisconnect = function () {
             origOnDisconnect();
+            $("#energia").text("");
             $("#backBuffer").css('background-image', 'url("static/panel/grafika/welcome.png")');
             $("#pasekStanu").css({display: "none"});
             window.blaster.onConnect = false;
