@@ -1,36 +1,38 @@
 
 
-	<div style= "width:100%" class="centrowanie"> 
-		<div id="pytanie">Tabela Wynikow</div>
-		<div id="tabela" class="tabela">
-			<table id="tabelka" class="tabelka">
-				<thead>
-				<tr>
-					<td >POZYCJA</td>
-					<td >IMIE</td>
-					<td >PUNKTY</td>
-					<td >SMIERC</td>
-					<td>PING</td>
-				</tr>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-		</div>
-			<button id="wroc" class="apend">Wroc do gry</button>	
-	</div>
+<div style= "width:100%" class="centrowanie"> 
+    <div id="pytanie">Tabela Wyników</div>
+    <div id="tabela" class="tabela">
+        <table id="tabelka" class="tabelka">
+            <thead>
+                <tr>
+                    <td>POZYCJA</td>
+                    <td>IMIE</td>
+                    <td>PUNKTY</td>
+                    <td>SMIERC</td>
+                    <td>PING</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <button id="wroc" class="apend">Wróć do gry</button>	
+</div>
 <script>
-		window.okienko.closeWyniki = function(node){
-			clearInterval(window.okienko.wynikiRefresh);
-		}
-		
-		window.okienko.openWyniki = function(node){
-			var s = function() { 
-				window.socket.send(new TanksPacket("RekordyWynikow",{}));
-			}
-			s();
-			window.okienko.wynikiRefresh = setInterval(s,1000);
-		}
+    window.okienko.closeWyniki = function (node) {
+        clearInterval(window.okienko.wynikiRefresh);
+    };
 
-		
-	</script>
+    window.okienko.openWyniki = function (node) {
+        var s = function () {
+            if (window.socket) {
+                window.socket.send(new TanksPacket("RekordyWynikow", {}));
+            }
+        };
+        s();
+        window.okienko.wynikiRefresh = setInterval(s, 1000);
+    };
+
+
+</script>

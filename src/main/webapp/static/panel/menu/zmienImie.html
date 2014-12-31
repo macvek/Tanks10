@@ -1,25 +1,30 @@
 
-		<div style= "width:100%"> 
-		<div id="pytanie">Zmiana imienia</div>
-		<div id="tabela" class="centrowanie">
-			<b>Nowe imie:</b><input id="imie" /><br />
-			<button id="zmienImie" class="apend">Zapisz</button>
-			<button id="wroc" class="apend">Wroc do gry</button>
-		</div>
-	</div>
+<div style= "width:100%"> 
+    <div id="pytanie">Zmiana imienia</div>
+    <div id="tabela" class="centrowanie">
+        <b>Nowe imie:</b><input id="imie" /><br />
+        <button id="zmienImie" class="apend">Zapisz</button>
+        <button id="wroc" class="apend">Wroc do gry</button>
+    </div>
+</div>
 
 
 
 <script>
 
-window.okienko.zmienImieEnter = function() {blaster.haltKeyboard = true;}
-window.okienko.zmienImieMenu = function(node)
-{
-	blaster.haltKeyboard = false;
-	if ($(node).attr("id")== "zmienImie")
-	{
-		var name = okienko.filtruj($("#imie").val());
-		window.socket.send(Set("name",name));
-	}
-}
+    window.okienko.zmienImieEnter = function () {
+        blaster.haltKeyboard = true;
+    }
+    window.okienko.zmienImieMenu = function (node)
+    {
+        if (!window.socket) {
+            return;
+        }
+        blaster.haltKeyboard = false;
+        if ($(node).attr("id") == "zmienImie")
+        {
+            var name = okienko.filtruj($("#imie").val());
+            window.socket.send(Set("name", name));
+        }
+    }
 </script>

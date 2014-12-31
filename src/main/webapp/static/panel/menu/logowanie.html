@@ -1,52 +1,52 @@
 
-	<div style= "width:100%"> 
-		<div id="pytanie">Ustaw</div> 
-			<div style="color:#000000" class="centrowanie"> 
-			
-				<table>
-					<tr><td><b>Imie:</b></td><td><input id="Imie" /></td></tr>
-					<tr><td><b>Typ czolgu:</b></td><td><select id="TypCzolgu">
-						<option>Tiny</option>
-						<option>Light</option>
-						<option>Massive</option>
-					</select></td></tr>
-			
-					<tr><td><b>Kolor:</b></td><td><select id="Kolor">
-						<option>czerwony</option>
-						<option>zielony</option>
-						<option>niebieski</option>
-						<option>bialy</option>
-						<option>zolty</option>
-						<option>brazowy</option>
-						<option>pomaranczowy</option>
-					</select></td></tr>
-				</table>	
-			<button id="logowanieGraj" class="apend" >Graj</button> 
-			<button id="logowanieWstecz" class="apend" >Wstecz</button> 
-		
-			</div>
-	</div>
-	<script>
-window.okienko.logowanieMenu = function(node)
-{
-	if ($(node).attr("id")== "logowanieWstecz")
-	{
-		window.okienko.wczytaj("static/panel/menu/obserwuj.html","","obserwujMenu");
-	}
+<div style= "width:100%"> 
+    <div id="pytanie">Ustaw</div> 
+    <div style="color:#000000" class="centrowanie"> 
 
-	if ($(node).attr("id")== "logowanieGraj")
-	{
-	
-		var name = $("#Imie").val();
-		var model = $("#TypCzolgu").val();
-		var color = $("#Kolor").val();
+        <table>
+            <tr><td><b>Imię:</b></td><td><input id="Imie" /></td></tr>
+            <tr><td><b>Typ czołgu:</b></td><td><select id="TypCzolgu">
+                        <option>Tiny</option>
+                        <option>Light</option>
+                        <option>Massive</option>
+                    </select></td></tr>
 
-		blaster.setName(okienko.filtruj(name));
-		blaster.setModel(model);
-		blaster.setColor(color);
-		
-		window.socket.send(Set("type",4));
-	}
-}
+            <tr><td><b>Kolor:</b></td><td><select id="Kolor">
+                        <option>czerwony</option>
+                        <option>zielony</option>
+                        <option>niebieski</option>
+                        <option>biały</option>
+                        <option>żółty</option>
+                        <option>brązowy</option>
+                        <option>pomarańczowy</option>
+                    </select></td></tr>
+        </table>	
+        <button id="logowanieGraj" class="apend" >Graj</button> 
+        <button id="logowanieWstecz" class="apend" >Wstecz</button> 
+
+    </div>
+</div>
+<script>
+    window.okienko.logowanieMenu = function (node)
+    {
+        if ($(node).attr("id") == "logowanieWstecz")
+        {
+            window.okienko.wczytaj("static/panel/menu/obserwuj.html", "", "obserwujMenu");
+        }
+
+        if ($(node).attr("id") == "logowanieGraj")
+        {
+
+            var name = $("#Imie").val();
+            var model = $("#TypCzolgu").val();
+            var color = $("#Kolor").val();
+
+            blaster.setName(okienko.filtruj(name));
+            blaster.setModel(model);
+            blaster.setColor(color);
+
+            window.socket.send(Set("type", 4));
+        }
+    }
 
 </script>

@@ -1,30 +1,33 @@
-		<div style= "width:100%"> 
-		<div id="pytanie">Zmiana koloru</div>
-		<div id="tabela" class="centrowanie">
-		<b>Nowy kolor:</b>
-			<select id="kolor">
-				<option>bialy</option>
-				<option>brazowy</option>
-				<option>czerwony</option>
-				<option>niebieski</option>
-				<option>pomaranczowy</option>
-				<option>zielony</option>
-				<option>zolty</option>	
-			</select>
-			<br />
+<div style= "width:100%"> 
+    <div id="pytanie">Zmiana koloru</div>
+    <div id="tabela" class="centrowanie">
+        <b>Nowy kolor:</b>
+        <select id="kolor">
+            <option>biały</option>
+            <option>brązowy</option>
+            <option>czerwony</option>
+            <option>niebieski</option>
+            <option>pomarańczowy</option>
+            <option>zielony</option>
+            <option>zółty</option>	
+        </select>
+        <br />
 
-			<button id="zmienKolor" class="apend">Zapisz</button>
+        <button id="zmienKolor" class="apend">Zapisz</button>
 
-			<button id="wroc" class="apend">Wroc do gry</button>
-		</div>
-	</div>
+        <button id="wroc" class="apend">Wróć do gry</button>
+    </div>
+</div>
 <script>
-window.okienko.zmienKolorMenu = function(node)
-{
-	if ($(node).attr("id")== "zmienKolor")
-	{
-		var color = $("#kolor").val();
-		window.socket.send(Set("color",color));
-	}
-}
+    window.okienko.zmienKolorMenu = function (node)
+    {
+        if (!window.socket) {
+            return;
+        }
+        if ($(node).attr("id") == "zmienKolor")
+        {
+            var color = $("#kolor").val();
+            window.socket.send(Set("color", color));
+        }
+    };
 </script>

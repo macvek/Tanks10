@@ -150,7 +150,7 @@ var okienko = {
 };
 
 $(document).ready(function() {
-    $('#menu a').click(function() {
+    function actionForHrefs () {
         var href = $(this).attr('href');
         if (!href)
             return;
@@ -160,5 +160,8 @@ $(document).ready(function() {
 
         okienko.wczytaj(href, openhandler, closehandler);
         return false;
-    });
+    }
+    
+    $('#menu a').click(actionForHrefs);
+    $('#stopka a').click(actionForHrefs);
 });

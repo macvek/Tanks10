@@ -1,13 +1,3 @@
-#DebugForm {
-	position:absolute;
-	width:400px;
-	background-image:url(grafika/moro2.jpg);
-	border:10px groove #808000;
-	text-align:center;
-	color:#808040;
-}
-
-
 #pytanie {
 	background-color: #000000;
 	color:#ffffff;
