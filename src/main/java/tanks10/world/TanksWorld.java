@@ -307,7 +307,7 @@ public class TanksWorld implements Runnable {
     }
 
     public static void removeEntity(Entity ent) {
-        synchronized(world.toRemove) {
+        synchronized (world.toRemove) {
             world.toRemove.add(ent);
         }
     }
@@ -684,20 +684,10 @@ public class TanksWorld implements Runnable {
         }
     }
 
-    // Wywoływane kiedy gracz jest tworzony, tutaj też wysłać wszystkim powiadomienie o tym,
-    // to już działa zawsze dla Soldiera
-    private void onPlayerSpawn(Entity ent) {
-        broadcast(new AddEntity(ent));
-
-        playerListChanged = true;
-        entities.add(ent);
-        updateNames();
-    }
-
     private Spectator spawnSpectator(int id) {
         Spectator spec = new Spectator(id);
         synchronized (entities) {
-            //onPlayerSpawn(spec);
+            onSpectatorSpawn(spec);
             spectators.add(spec);
         }
         return spec;
@@ -711,6 +701,24 @@ public class TanksWorld implements Runnable {
             soldiers.add(soldier);
         }
         return soldier;
+    }
+
+    // Wywoływane kiedy gracz jest tworzony, tutaj też wysłać wszystkim powiadomienie o tym,
+    // to już działa zawsze dla Soldiera
+    private void onPlayerSpawn(Entity ent) {
+        broadcast(new AddEntity(ent));
+
+        addEntityToList(ent);
+    }
+
+    private void onSpectatorSpawn(Entity ent) {
+        addEntityToList(ent);
+    }
+
+    private void addEntityToList(Entity ent) {
+        playerListChanged = true;
+        entities.add(ent);
+        updateNames();
     }
 
     public static ScoreBoard[] getScoreBoard() {

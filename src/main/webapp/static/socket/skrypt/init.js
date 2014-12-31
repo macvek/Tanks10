@@ -86,7 +86,7 @@ function prepare_socket() {
 
         socket.listener.on("TimeStamp", blaster.TimeStamp);
 
-        socket.connect(host, port);
+        socket.connect();
 
         var console = {write: function (msg) {
                 document.getElementById("console").innerHTML += msg + "\n";
