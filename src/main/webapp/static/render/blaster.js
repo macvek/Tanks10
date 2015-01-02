@@ -133,10 +133,10 @@ var blaster = {
 			case "czerwony" : value = "red"; break; 
 			case "zielony" : value= "green"; break;
 			case "niebieski" : value= "blue"; break;
-			case "bialy" : value= "white"; break;
-			case "zolty" : value= "yellow"; break;
-			case "brazowy" : value= "brown"; break;
-			case "pomaranczowy" : value= "orange"; break;
+			case "biały" : value= "white"; break;
+			case "żółty" : value= "yellow"; break;
+			case "brązowy" : value= "brown"; break;
+			case "pomarańczowy" : value= "orange"; break;
 		}
 		
 		blaster.objects[id].color = value;

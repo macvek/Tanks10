@@ -84,10 +84,10 @@ public class TanksWorld implements Runnable {
         colors.add("czerwony");
         colors.add("zielony");
         colors.add("niebieski");
-        colors.add("bialy");
-        colors.add("zolty");
-        colors.add("brazowy");
-        colors.add("pomaranczowy");
+        colors.add("biały");
+        colors.add("żółty");
+        colors.add("brązowy");
+        colors.add("pomarańczowy");
     }
 
     private void registerWorldBoundaries() {
